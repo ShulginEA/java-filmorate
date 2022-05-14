@@ -29,27 +29,25 @@ public class FilmController {
     }
 
     @PostMapping
-    public boolean add(@Valid @NotNull @RequestBody Film film) {
+    public Film add(@Valid @NotNull @RequestBody Film film) {
         if (!films.containsKey(film.getId())) {
             if(checkAFilm(film)) {
                 films.put(film.getId(), film);
                 log.debug("Film added id={}",film.getId());
-                return true;
             }
         } else {
             throw new ValidationException("This movie already exists");
         }
-        return false;
+        return film;
     }
 
     @PutMapping
-    public boolean update(@Valid @NotNull @RequestBody Film film) {
+    public Film update(@Valid @NotNull @RequestBody Film film) {
         if (checkAFilm(film)) {
             films.put(film.getId(), film);
             log.debug("Film added or update id={}",film.getId());
-            return true;
         }
-        return false;
+        return film;
     }
 
     private boolean checkAFilm(Film film) {

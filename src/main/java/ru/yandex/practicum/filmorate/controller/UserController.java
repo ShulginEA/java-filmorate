@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @PostMapping
-    public boolean add(@Valid @NotNull @RequestBody User user) {
+    public User add(@Valid @NotNull @RequestBody User user) {
         if (!users.containsKey(user.getId())) {
             if (user.getName().isBlank()) {
                 user.setName(user.getLogin());
@@ -36,21 +36,21 @@ public class UserController {
                 users.put(user.getId(), user);
                 log.debug("User added with id={}",user.getId());
             }
-            return true;
         } else {
             throw new ValidationException("This user already exists");
         }
+        return user;
     }
 
     @PutMapping
-    public boolean update(@Valid @NotNull @RequestBody User user) {
+    public User update(@Valid @NotNull @RequestBody User user) {
         if (user.getName().isBlank()) {
             user.setName(user.getLogin());
             log.debug("User added or updated with name=login id={}",user.getId());
         }
         users.put(user.getId(), user);
         log.debug("User added or updated id={}",user.getId());
-        return true;
+        return user;
     }
 
     @ExceptionHandler(ValidationException.class)

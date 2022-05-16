@@ -13,20 +13,20 @@ import java.time.LocalDate;
 @SpringBootTest
 class UserControllerTest {
     @Autowired
-    UserController userController;
+    private UserController userController;
 
     @Test
     void shouldAddUser() {
-        User user = new User(1,"aa@aaa.ru", "bbb", "ccc",
-                LocalDate.of(2000, 1,1));
+        User user = new User(1, "aa@aaa.ru", "bbb", "ccc",
+                LocalDate.of(2000, 1, 1));
         userController.add(user);
         Assertions.assertEquals(user, userController.getAll().get(0));
     }
 
     @Test
     void shouldCantAddUserBecauseWrongDate() {
-        User user = new User(1,"aa@aaa.ru", "bbb", "ccc",
-                LocalDate.of(3000, 1,1));
+        User user = new User(1, "aa@aaa.ru", "bbb", "ccc",
+                LocalDate.of(3000, 1, 1));
         Assertions.assertThrows(ValidationException.class, () -> userController.add(user));
     }
 }

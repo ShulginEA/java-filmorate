@@ -31,9 +31,9 @@ public class FilmController {
     @PostMapping
     public Film add(@Valid @NotNull @RequestBody Film film) {
         if (!films.containsKey(film.getId())) {
-            if(checkAFilm(film)) {
+            if (checkAFilm(film)) {
                 films.put(film.getId(), film);
-                log.debug("Film added id={}",film.getId());
+                log.debug("Film added id={}", film.getId());
             }
         } else {
             throw new ValidationException("This movie already exists");
@@ -45,7 +45,7 @@ public class FilmController {
     public Film update(@Valid @NotNull @RequestBody Film film) {
         if (checkAFilm(film)) {
             films.put(film.getId(), film);
-            log.debug("Film added or update id={}",film.getId());
+            log.debug("Film added or update id={}", film.getId());
         }
         return film;
     }

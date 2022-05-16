@@ -31,10 +31,10 @@ public class UserController {
             if (user.getName().isBlank()) {
                 user.setName(user.getLogin());
                 users.put(user.getId(), user);
-                log.debug("User added with name=login id={}",user.getId());
+                log.debug("User added with name=login id={}", user.getId());
             } else {
                 users.put(user.getId(), user);
-                log.debug("User added with id={}",user.getId());
+                log.debug("User added with id={}", user.getId());
             }
         } else {
             throw new ValidationException("This user already exists");
@@ -46,10 +46,10 @@ public class UserController {
     public User update(@Valid @NotNull @RequestBody User user) {
         if (user.getName().isBlank()) {
             user.setName(user.getLogin());
-            log.debug("User added or updated with name=login id={}",user.getId());
+            log.debug("User added or updated with name=login id={}", user.getId());
         }
         users.put(user.getId(), user);
-        log.debug("User added or updated id={}",user.getId());
+        log.debug("User added or updated id={}", user.getId());
         return user;
     }
 

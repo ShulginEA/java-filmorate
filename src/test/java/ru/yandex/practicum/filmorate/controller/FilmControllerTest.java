@@ -6,25 +6,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+
 import java.time.LocalDate;
 
 @SpringBootTest
 class FilmControllerTest {
     @Autowired
-    FilmController filmController;
+    private FilmController filmController;
 
     @Test
     void shouldAddFilm() {
-        Film film = new Film(1,"aaa", "bbb",
-                LocalDate.of(2000, 1,1), 120);
+        Film film = new Film(1, "aaa", "bbb",
+                LocalDate.of(2000, 1, 1), 120);
         filmController.add(film);
         Assertions.assertEquals(film, filmController.getAll().get(0));
     }
 
     @Test
     void shouldCantAddFilmBecauseWrongDate() {
-        Film film = new Film(1,"aaa", "bbb",
-                LocalDate.of(1000, 1,1), 120);
+        Film film = new Film(1, "aaa", "bbb",
+                LocalDate.of(1000, 1, 1), 120);
         Assertions.assertThrows(ValidationException.class, () -> filmController.add(film));
     }
 
@@ -35,8 +36,8 @@ class FilmControllerTest {
             sb.append("b");
         }
         String description = sb.toString();
-        Film film = new Film(1,"aaa", description,
-                LocalDate.of(2000, 1,1), 120);
+        Film film = new Film(1, "aaa", description,
+                LocalDate.of(2000, 1, 1), 120);
         Assertions.assertThrows(ValidationException.class, () -> filmController.add(film));
     }
 }

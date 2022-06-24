@@ -39,12 +39,12 @@ public class FilmController {
     }
 
     @PostMapping("/films")
-    public Film addFilm(@Valid @RequestBody Film film) throws ValidationException {
+    public Film addFilm(@Valid @RequestBody Film film) {
         return filmService.createFilm(film);
     }
 
     @PutMapping("/films")
-    public Film updateFilm(@Valid @RequestBody Film film) throws ValidationException {
+    public Film updateFilm(@Valid @RequestBody Film film) {
         return filmService.updateFilm(film);
     }
 

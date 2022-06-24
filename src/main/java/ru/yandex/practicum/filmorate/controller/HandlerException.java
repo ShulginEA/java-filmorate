@@ -5,8 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
 @Slf4j
@@ -15,35 +15,35 @@ public class HandlerException {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationException(ValidationException e) {
+    public ErrorResponse handleValidationException(final ValidationException e) {
         log.warn("При обработке запроса произошла ошибка: '{}'", e.getMessage());
         return new ErrorResponse(String.format("Произошла ошибка. %s", e.getMessage()));
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleObjectNotFoundException(NotFoundException e) {
+    public ErrorResponse handleNotFoundException(final NotFoundException e) {
         log.warn("При обработке запроса произошла ошибка: '{}'", e.getMessage());
         return new ErrorResponse(String.format("Произошла ошибка. %s", e.getMessage()));
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
         log.warn("При обработке запроса произошла ошибка: '{}'", e.getMessage());
         return new ErrorResponse(String.format("Произошла ошибка. %s", e.getMessage()));
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+    public ErrorResponse handleHttpMessageNotReadableException(final HttpMessageNotReadableException e) {
         log.warn("При обработке запроса произошла ошибка: '{}'", e.getMessage());
         return new ErrorResponse(String.format("Произошла ошибка. %s", e.getMessage()));
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleOtherException(Exception e) {
+    public ErrorResponse handleOtherException(final Exception e) {
         log.warn("При обработке запроса произошла ошибка: '{}'", e.getMessage());
         return new ErrorResponse(String.format("Произошла ошибка. %s", e.getMessage()));
     }

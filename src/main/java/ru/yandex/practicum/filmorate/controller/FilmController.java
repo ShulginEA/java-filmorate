@@ -1,66 +1,76 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @Slf4j
-@RequestMapping("/films")
 public class FilmController {
-    private final Map<Long, Film> films = new HashMap<>();
-    private static final LocalDate DATE_OF_BIRTH_CINEMA = LocalDate.of(1895, Month.DECEMBER, 28);
 
-    @GetMapping
-    public List<Film> getAll() {
-        return new ArrayList<Film>(films.values());
+    private final FilmService filmService;
+
+    @Autowired
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
     }
 
-    @PostMapping
-    public Film add(@Valid @NotNull @RequestBody Film film) {
-        if (!films.containsKey(film.getId())) {
-            if (checkAFilm(film)) {
-                films.put(film.getId(), film);
-                log.debug("Film added id={}", film.getId());
-            }
-        } else {
-            throw new ValidationException("This movie already exists");
+    @GetMapping("/films")
+    public List<Film> allFilms() {
+        return filmService.getAllFilms();
+    }
+
+    @GetMapping("/films/{id}")
+    public Film findFilmById(@PathVariable Long id) {
+        checkFilmId(id);
+        return filmService.getFilmById(id);
+    }
+
+    @GetMapping("/films/popular")
+    public List<Film> bestFilmsByLike(
+            @RequestParam(value = "count", defaultValue = "10", required = false) Integer count) {
+        return filmService.bestFilmsByLike(count);
+    }
+
+    @PostMapping("/films")
+    public Film addFilm(@Valid @RequestBody Film film) throws ValidationException {
+        return filmService.createFilm(film);
+    }
+
+    @PutMapping("/films")
+    public Film updateFilm(@Valid @RequestBody Film film) throws ValidationException {
+        return filmService.updateFilm(film);
+    }
+
+    @PutMapping("/films/{id}/like/{userId}")
+    public void addLike(@PathVariable Long id, @PathVariable Long userId) {
+        checkFilmId(id);
+        checkUserId(userId);
+        filmService.addLike(userId, id);
+    }
+
+    @DeleteMapping("/films/{id}/like/{userId}")
+    public void deleteLike(@PathVariable Long id, @PathVariable Long userId) {
+        checkFilmId(id);
+        checkUserId(userId);
+        filmService.deleteLike(id, userId);
+    }
+
+    private void checkFilmId(Long id) {
+        if (id == null) {
+            throw new ValidationException("wrong film id");
         }
-        return film;
     }
 
-    @PutMapping
-    public Film update(@Valid @NotNull @RequestBody Film film) {
-        if (checkAFilm(film)) {
-            films.put(film.getId(), film);
-            log.debug("Film added or update id={}", film.getId());
+    private void checkUserId(Long userId) {
+        if (userId == null) {
+            throw new ValidationException("wrong user id");
         }
-        return film;
-    }
-
-    private boolean checkAFilm(Film film) {
-        if (film.getReleaseDate().isAfter(DATE_OF_BIRTH_CINEMA)) {
-            return true;
-        } else {
-            throw new ValidationException("Release date must be after: " + DATE_OF_BIRTH_CINEMA);
-        }
-    }
-
-    @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<String> exceptionHandler(ValidationException e) {
-        log.debug(e.getMessage());
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 }

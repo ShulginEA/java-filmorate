@@ -17,16 +17,16 @@ class UserControllerTest {
 
     @Test
     void shouldAddUser() {
-        User user = new User(1, "aa@aaa.ru", "bbb", "ccc",
+        User user = new User((long) 1, "aa@aaa.ru", "bbb", "ccc",
                 LocalDate.of(2000, 1, 1));
-        userController.add(user);
-        Assertions.assertEquals(user, userController.getAll().get(0));
+        userController.addUser(user);
+        Assertions.assertEquals(user, userController.allUsers().get(0));
     }
 
     @Test
     void shouldCantAddUserBecauseWrongDate() {
-        User user = new User(1, "aa@aaa.ru", "bbb", "ccc",
+        User user = new User((long) 1, "aa@aaa.ru", "bbb", "ccc",
                 LocalDate.of(3000, 1, 1));
-        Assertions.assertThrows(ValidationException.class, () -> userController.add(user));
+        Assertions.assertThrows(ValidationException.class, () -> userController.addUser(user));
     }
 }

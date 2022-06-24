@@ -1,61 +1,86 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @Slf4j
-@RequestMapping("/users")
 public class UserController {
-    private final Map<Long, User> users = new HashMap<>();
+    private final UserService userService;
 
-    @GetMapping
-    public List<User> getAll() {
-        return new ArrayList<User>(users.values());
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    @PostMapping
-    public User add(@Valid @NotNull @RequestBody User user) {
-        if (!users.containsKey(user.getId())) {
-            if (user.getName().isBlank()) {
-                user.setName(user.getLogin());
-                users.put(user.getId(), user);
-                log.debug("User added with name=login id={}", user.getId());
-            } else {
-                users.put(user.getId(), user);
-                log.debug("User added with id={}", user.getId());
-            }
-        } else {
-            throw new ValidationException("This user already exists");
+    @GetMapping("/users/{id}")
+    public User findUserById(@PathVariable Long id) {
+        checkUserId(id);
+        return userService.findUserById(id);
+    }
+
+    @GetMapping("/users")
+    public List<User> allUsers() {
+        return userService.getAllUsers();
+    }
+
+    @GetMapping("/users/{id}/friends/common/{otherId}")
+    public List<User> findCommonFriends(@PathVariable("id") Long userId, @PathVariable("otherId") Long id) {
+        checkUserId(id);
+        if (id == null) {
+            throw new ValidationException(String.format("Не корректно введен id другого пользователя. otherId = %s", id));
         }
-        return user;
+        return userService.getAllMutualFriendsById(userId, id);
     }
 
-    @PutMapping
-    public User update(@Valid @NotNull @RequestBody User user) {
-        if (user.getName().isBlank()) {
-            user.setName(user.getLogin());
-            log.debug("User added or updated with name=login id={}", user.getId());
+    @GetMapping("/users/{id}/friends")
+    public List<User> findAllFriends(@PathVariable("id") Long userId) {
+        checkUserId(userId);
+        return userService.getFriendsById(userId);
+    }
+
+    @PostMapping("/users")
+    public @Valid User addUser(@Valid @RequestBody User user) {
+        return userService.createUser(user);
+    }
+
+    @ResponseBody
+    @PutMapping("/users")
+    public User changeUser(@Valid @RequestBody User user) {
+        return userService.updateUser(user);
+    }
+
+    @PutMapping("/users/{id}/friends/{friendId}")
+    public void addFriends(@PathVariable("id") Long userId, @PathVariable("friendId") Long friendId) {
+        checkUserId(userId);
+        checkFriendId(friendId);
+        userService.addFriend(userId, friendId);
+    }
+
+    @DeleteMapping("/users/{id}/friends/{friendId}")
+    public void deleteFriends(@PathVariable("id") Long userId, @PathVariable("friendId") Long friendId) {
+        checkUserId(userId);
+        checkFriendId(friendId);
+        userService.removeFriend(userId, friendId);
+    }
+
+    private void checkUserId(Long id) {
+        if (id == null) {
+            throw new ValidationException("wrong user id");
         }
-        users.put(user.getId(), user);
-        log.debug("User added or updated id={}", user.getId());
-        return user;
     }
 
-    @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<String> exceptionHandler(ValidationException e) {
-        log.debug(e.getMessage());
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    private void checkFriendId(Long friendId) {
+        if (friendId == null) {
+            throw new ValidationException(("wrong friend id"));
+        }
     }
 }

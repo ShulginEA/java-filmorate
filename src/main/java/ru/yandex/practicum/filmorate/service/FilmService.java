@@ -21,6 +21,7 @@ public class FilmService {
     private final UserStorage userStorage;
 
     private static final LocalDate DATE_OF_BIRTH_CINEMA = LocalDate.of(1895, Month.DECEMBER, 28);
+    private static final int MAX_LENGTH_OF_DESCRIPTION = 200;
 
     @Autowired
     public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
@@ -73,7 +74,7 @@ public class FilmService {
     }
 
     private void validateFilm(Film film) throws ValidationException {
-        if (film.getDescription().length() > 200) {
+        if (film.getDescription().length() > MAX_LENGTH_OF_DESCRIPTION) {
             throw new ValidationException("Description can be < 200");
         }
         if (film.getReleaseDate().isBefore(DATE_OF_BIRTH_CINEMA)) {

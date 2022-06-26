@@ -16,17 +16,17 @@ class FilmControllerTest {
 
     @Test
     void shouldAddFilm() {
-        Film film = new Film(1, "aaa", "bbb",
+        Film film = new Film((long) 1, "aaa", "bbb",
                 LocalDate.of(2000, 1, 1), 120);
-        filmController.add(film);
-        Assertions.assertEquals(film, filmController.getAll().get(0));
+        filmController.addFilm(film);
+        Assertions.assertEquals(film, filmController.allFilms().get(0));
     }
 
     @Test
     void shouldCantAddFilmBecauseWrongDate() {
-        Film film = new Film(1, "aaa", "bbb",
+        Film film = new Film((long) 1, "aaa", "bbb",
                 LocalDate.of(1000, 1, 1), 120);
-        Assertions.assertThrows(ValidationException.class, () -> filmController.add(film));
+        Assertions.assertThrows(ValidationException.class, () -> filmController.addFilm(film));
     }
 
     @Test
@@ -36,8 +36,8 @@ class FilmControllerTest {
             sb.append("b");
         }
         String description = sb.toString();
-        Film film = new Film(1, "aaa", description,
+        Film film = new Film((long) 1, "aaa", description,
                 LocalDate.of(2000, 1, 1), 120);
-        Assertions.assertThrows(ValidationException.class, () -> filmController.add(film));
+        Assertions.assertThrows(ValidationException.class, () -> filmController.addFilm(film));
     }
 }
